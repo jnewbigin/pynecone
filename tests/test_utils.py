@@ -1,6 +1,7 @@
 from typing import Any, List, Union
 
 import pytest
+from contextlib import nullcontext as does_not_raise
 
 from pynecone.utils import build, format, imports, prerequisites, types
 from pynecone.var import Var
@@ -229,6 +230,18 @@ def test_format_route(route: str, expected: bool):
     """
     assert format.format_route(route) == expected
 
+@pytest.mark.parametrize(
+    "input,output,expectation",
+    [
+        ("/tmp/my-app", "my_app", does_not_raise()),
+        ("/tmp/my_app", "my_app", does_not_raise()),
+        ("", None, pytest.raises(FileNotFoundError)),
+        ("/", None, pytest.raises(FileNotFoundError)),
+    ],
+)
+def test_extract_default_app_name(input: str, output: str, expectation: Any):
+    with expectation:
+        assert prerequisites.extract_default_app_name(input) == output
 
 def test_setup_frontend(tmp_path, mocker):
     """Test checking if assets content have been

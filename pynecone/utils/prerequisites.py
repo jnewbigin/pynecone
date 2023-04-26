@@ -130,12 +130,32 @@ def get_production_backend_url() -> str:
 def get_default_app_name() -> str:
     """Get the default app name.
 
-    The default app name is the name of the current directory.
+    The default app name is based off the name of the current directory.
 
     Returns:
         The default app name.
+
+    Raises:
+        FileNotFoundError: If the calculated app name is an empty string
     """
-    return os.getcwd().split(os.path.sep)[-1].replace("-", "_")
+    return extract_default_app_name(os.getcwd())
+
+
+def extract_default_app_name(cwd : str) -> str:
+    """Extract an app name based on a directory name.
+
+    The app name is a normalized version of the name of the specified directory.
+
+    Returns:
+        The default app name.
+
+    Raises:
+        FileNotFoundError: If the calculated app name is an empty string
+    """
+    app_name = cwd.split(os.path.sep)[-1].replace("-", "_")
+    if app_name == '':
+        raise FileNotFoundError("Pynecone was unable to determine the default app name. Please specify with --name")
+    return app_name
 
 
 def create_config(app_name: str):
